@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>অন্তরালে পুরুষ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;600;700;900&family=Noto+Sans+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#08080a;
+      --panel:#111115;
+      --card:#17171d;
+      --text:#f4f4f5;
+      --muted:#a1a1aa;
+      --accent:#ff4d6d;
+      --accent2:#ff7aa2;
+      --gold:#e8c96d;
+      --line:rgba(255,255,255,.07);
+      --shadow:0 18px 60px rgba(0,0,0,.55);
+      --radius:24px;
+    }
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+    html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Noto Sans Bengali',sans-serif;overflow:hidden}
+    body{touch-action:manipulation}
+
+    /* APP SHELL */
+    .app{height:100vh;display:flex;flex-direction:column;max-width:480px;margin:0 auto;background:linear-gradient(180deg,#09090b 0%,#06060a 100%)}
+
+    header{padding:16px 16px 10px;border-bottom:1px solid var(--line);background:rgba(8,8,10,.97);backdrop-filter:blur(20px);position:sticky;top:0;z-index:20}
+    .brand{display:flex;align-items:center;justify-content:space-between}
+    .brand h1{font-family:'Noto Serif Bengali',serif;font-size:19px;font-weight:900;letter-spacing:.3px;background:linear-gradient(135deg,#fff 0%,#c9c9d0 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .pulse{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 0 rgba(255,77,109,.6);animation:pulse 2.2s ease-in-out infinite}
+    @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,77,109,.6)}50%{box-shadow:0 0 0 6px rgba(255,77,109,0)}}
+
+    nav{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:12px}
+    .tab{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:12px;padding:9px 4px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Noto Sans Bengali',sans-serif;transition:all .2s}
+    .tab.active{background:linear-gradient(135deg,var(--accent),#e02040);color:#fff;border-color:transparent;box-shadow:0 8px 20px rgba(255,45,85,.25)}
+
+    main{flex:1;position:relative;overflow:hidden}
+    .screen{position:absolute;inset:0;padding:14px 14px 20px;overflow:hidden;display:none}
+    .screen.active{display:block}
+    .panel{height:100%;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:rgba(255,255,255,.02)}
+    .scroll-area{padding:16px;overflow:auto;height:100%;-webkit-overflow-scrolling:touch}
+
+    /* TOC */
+    .section-title{font-family:'Noto Serif Bengali',serif;font-size:17px;font-weight:700;margin-bottom:14px;color:#e8e8ed}
+    .toc-item{width:100%;text-align:left;border:none;background:rgba(255,255,255,.035);color:var(--text);padding:14px 16px;border-radius:16px;margin-bottom:9px;font-size:14px;font-weight:700;cursor:pointer;border:1px solid var(--line);font-family:'Noto Serif Bengali',serif;transition:background .18s}
+    .toc-item:active{background:rgba(255,77,109,.12)}
+    .toc-item small{display:block;color:var(--muted);margin-top:5px;font-weight:400;line-height:1.5;font-size:13px;font-family:'Noto Sans Bengali',sans-serif}
+
+    /* READER */
+    .reader-wrap{height:100%;display:flex;flex-direction:column}
+    .reader-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 10px;border-bottom:1px solid var(--line)}
+    .reader-head .hint{color:var(--muted);font-size:12px}
+    .nav-btn{border:none;background:#1c1c24;color:#fff;width:40px;height:40px;border-radius:12px;font-size:18px;cursor:pointer}
+    .slider-viewport{position:relative;flex:1;overflow:hidden;touch-action:pan-y}
+    .slider-track{display:flex;height:100%;transition:transform .34s cubic-bezier(.22,.61,.36,1);will-change:transform}
+    .slide{min-width:100%;height:100%;padding:16px;display:flex;align-items:center;justify-content:center}
+    .story{width:100%;max-width:360px;text-align:center;background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.015));border:1px solid rgba(255,255,255,.09);border-radius:26px;padding:28px 22px;box-shadow:0 24px 60px rgba(0,0,0,.35)}
+    .story h3{font-family:'Noto Serif Bengali',serif;margin-bottom:16px;font-size:21px;line-height:1.4;color:#fff}
+    .story p{white-space:pre-line;line-height:2.1;font-size:15px;color:#d8d8e0}
+    .reader-footer{display:flex;justify-content:space-between;align-items:center;padding:10px 14px 14px;border-top:1px solid var(--line)}
+    .counter{font-size:12px;color:var(--muted)}
+
+    /* ═══════════════════════════════════════
+       ABOUT SECTION — COMPLETELY REDESIGNED
+    ═══════════════════════════════════════ */
+    .about-scroll{padding:0 0 24px;overflow:auto;height:100%;-webkit-overflow-scrolling:touch}
+
+    /* Hero Banner */
+    .about-hero{
+      position:relative;
+      padding:36px 22px 28px;
+      overflow:hidden;
+      text-align:center;
+      border-bottom:1px solid var(--line);
+      background:linear-gradient(180deg,rgba(255,77,109,.08) 0%,transparent 100%);
+    }
+    .about-hero::before{
+      content:'';position:absolute;top:-60px;left:50%;transform:translateX(-50%);
+      width:260px;height:260px;border-radius:50%;
+      background:radial-gradient(circle,rgba(255,77,109,.15) 0%,transparent 70%);
+      pointer-events:none;
+    }
+    .author-avatar{
+      width:72px;height:72px;border-radius:50%;
+      background:linear-gradient(135deg,var(--accent) 0%,#c0163a 100%);
+      display:flex;align-items:center;justify-content:center;
+      font-size:30px;margin:0 auto 14px;
+      box-shadow:0 0 0 3px rgba(255,77,109,.25),0 12px 32px rgba(255,77,109,.3);
+    }
+    .author-name{
+      font-family:'Noto Serif Bengali',serif;
+      font-size:20px;font-weight:900;
+      color:#fff;margin-bottom:4px;letter-spacing:.3px;
+    }
+    .author-location{
+      font-size:13px;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:5px;
+    }
+    .author-location span{color:var(--accent);font-size:14px}
+
+    /* Bio quote */
+    .author-bio{
+      margin:18px 16px 0;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+      border-left:3px solid var(--accent);
+      border-radius:16px;padding:14px 16px;
+    }
+    .author-bio p{
+      font-family:'Noto Serif Bengali',serif;
+      font-size:14px;line-height:2;color:#d0d0db;font-style:italic;
+    }
+
+    /* Section block */
+    .about-block{margin:14px 14px 0}
+    .about-block-title{
+      display:flex;align-items:center;gap:8px;
+      font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+      color:var(--accent);margin-bottom:10px;
+    }
+    .about-block-title::after{content:'';flex:1;height:1px;background:var(--line)}
+
+    /* Why card */
+    .why-card{
+      background:linear-gradient(135deg,rgba(255,77,109,.07),rgba(255,45,85,.03));
+      border:1px solid rgba(255,77,109,.18);
+      border-radius:20px;padding:18px;
+    }
+    .why-lines{list-style:none;display:flex;flex-direction:column;gap:10px;margin-top:4px}
+    .why-line{
+      display:flex;align-items:flex-start;gap:10px;
+      font-size:14px;line-height:1.7;color:#d8d8e0;
+      font-family:'Noto Serif Bengali',serif;
+    }
+    .why-icon{
+      min-width:28px;height:28px;border-radius:9px;
+      background:rgba(255,77,109,.12);border:1px solid rgba(255,77,109,.2);
+      display:flex;align-items:center;justify-content:center;font-size:13px;margin-top:2px;
+    }
+
+    /* Series tags */
+    .series-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .series-tag{
+      background:rgba(255,255,255,.04);border:1px solid var(--line);
+      border-radius:14px;padding:12px 14px;
+      display:flex;align-items:center;gap:8px;
+    }
+    .series-tag .ico{font-size:16px}
+    .series-tag .lbl{font-size:13px;color:#ccccd6;line-height:1.3;font-family:'Noto Serif Bengali',serif}
+
+    /* Platform links */
+    .platform-row{display:flex;flex-direction:column;gap:10px}
+    .platform-card{
+      display:flex;align-items:center;gap:14px;
+      background:rgba(255,255,255,.04);border:1px solid var(--line);
+      border-radius:18px;padding:14px 16px;text-decoration:none;cursor:pointer;
+    }
+    .platform-icon{
+      width:42px;height:42px;border-radius:13px;
+      display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;
+    }
+    .yt .platform-icon{background:linear-gradient(135deg,#ff0000,#cc0000)}
+    .fb .platform-icon{background:linear-gradient(135deg,#1877f2,#0a5bb7)}
+    .platform-info .pname{font-size:14px;font-weight:700;color:#fff;margin-bottom:2px}
+    .platform-info .psub{font-size:12px;color:var(--muted)}
+    .platform-card .arrow{margin-left:auto;color:var(--muted);font-size:18px}
+
+    /* Closing quote */
+    .closing-quote{
+      margin:14px 14px 0;
+      text-align:center;padding:20px 16px;
+      background:radial-gradient(ellipse at center,rgba(255,77,109,.07) 0%,transparent 70%);
+      border:1px solid rgba(255,77,109,.12);border-radius:20px;
+    }
+    .closing-quote p{
+      font-family:'Noto Serif Bengali',serif;
+      font-size:15px;line-height:2;color:#c8c8d4;font-style:italic;
+    }
+    .closing-quote .sig{
+      margin-top:12px;font-size:12px;color:var(--accent);letter-spacing:.5px;font-weight:700;
+    }
+
+    /* WRITE */
+    .field{margin-bottom:12px}
+    label{display:block;margin-bottom:7px;color:var(--muted);font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+    input,textarea{width:100%;border:none;outline:none;background:#10101a;color:var(--text);border:1px solid var(--line);border-radius:16px;padding:13px;font-size:14px;font-family:'Noto Sans Bengali',sans-serif}
+    textarea{min-height:160px;resize:none}
+    .actions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+    .action{border:none;border-radius:14px;padding:12px 8px;color:#fff;font-weight:800;cursor:pointer;font-family:'Noto Sans Bengali',sans-serif;font-size:13px}
+    .save{background:linear-gradient(135deg,#ff4d6d,#e02040)}
+    .update{background:#1d6fff}
+    .delete{background:#f59e0b;color:#111}
+    .saved-item{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:9px;margin-top:14px}
+    .saved-item h4{font-family:'Noto Serif Bengali',serif;margin-bottom:8px;font-size:15px}
+    .saved-item p{color:var(--muted);white-space:pre-line;line-height:1.8;font-size:13px}
+    .saved-item button{margin-top:10px;border:none;background:#1e1e2a;color:#fff;padding:8px 14px;border-radius:10px;cursor:pointer;font-size:12px;font-family:'Noto Sans Bengali',sans-serif}
+    .empty{color:var(--muted);text-align:center;padding:20px 0;font-size:14px}
+  </style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand">
+      <h1>অন্তরালে পুরুষ</h1>
+      <div class="pulse"></div>
+    </div>
+    <nav>
+      <button class="tab active" data-screen="toc">📖 সূচি</button>
+      <button class="tab" data-screen="read">📚 পড়া</button>
+      <button class="tab" data-screen="about">👤 লেখক</button>
+      <button class="tab" data-screen="write">✍️ লেখা</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- TOC -->
+    <section class="screen active" id="toc">
+      <div class="panel"><div class="scroll-area">
+        <h2 class="section-title">সূচি</h2>
+        <div id="tocList"></div>
+      </div></div>
+    </section>
+
+    <!-- READER -->
+    <section class="screen" id="read">
+      <div class="panel reader-wrap">
+        <div class="reader-head">
+          <button class="nav-btn" id="prevBtn">←</button>
+          <div class="hint">Swipe করুন</div>
+          <button class="nav-btn" id="nextBtn">→</button>
+        </div>
+        <div class="slider-viewport" id="sliderViewport">
+          <div class="slider-track" id="sliderTrack"></div>
+        </div>
+        <div class="reader-footer">
+          <div class="counter" id="counter">1 / 1</div>
+          <div class="counter">ভালোবাসা · দায়িত্ব · নীরবতা</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT — REDESIGNED -->
+    <section class="screen" id="about">
+      <div class="panel">
+        <div class="about-scroll">
+
+          <!-- Hero -->
+          <div class="about-hero">
+            <div class="author-avatar">✍️</div>
+            <div class="author-name">মোঃ রবিউল হোসেন</div>
+            <div class="author-location"><span>📍</span> চট্টগ্রাম, মিরসরাই</div>
+            <div class="author-bio">
+              <p>আমি "অন্তরালে পুরুষ" তৈরি করেছি সেই সব পুরুষদের কথা বলার জন্য, যাদের কষ্ট দেখা যায় না — কিন্তু বোঝা যায় গভীরে। এখানে তুলে ধরতে চাই সেই নীরব মানুষগুলোর গল্প, যারা হাসে, লড়ে, দায়িত্ব নেয়, ভালোবাসে — আর ভেতরে ভেতরে ভেঙেও পড়ে না।</p>
+            </div>
+          </div>
+
+          <!-- Why this app -->
+          <div class="about-block">
+            <div class="about-block-title">কেন এই অ্যাপ</div>
+            <div class="why-card">
+              <div class="why-lines">
+                <div class="why-line"><div class="why-icon">😔</div><span>যারা কাঁদে, কিন্তু দেখায় না</span></div>
+                <div class="why-line"><div class="why-icon">⚔️</div><span>যারা লড়ে, কিন্তু কেউ দেখে না</span></div>
+                <div class="why-line"><div class="why-icon">❤️</div><span>যারা ভালোবাসে, কিন্তু বোঝে না কেউ</span></div>
+                <div class="why-line"><div class="why-icon">🛡️</div><span>যারা দায়িত্ব বহন করে নীরবে</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Series -->
+          <div class="about-block">
+            <div class="about-block-title">সিরিজের বিষয়</div>
+            <div class="series-grid">
+              <div class="series-tag"><span class="ico">🌑</span><div class="lbl">নীরব কষ্ট</div></div>
+              <div class="series-tag"><span class="ico">🌫️</span><div class="lbl">একাকীত্ব</div></div>
+              <div class="series-tag"><span class="ico">⚖️</span><div class="lbl">দায়িত্ব</div></div>
+              <div class="series-tag"><span class="ico">💞</span><div class="lbl">ভালোবাসা</div></div>
+              <div class="series-tag"><span class="ico">🌿</span><div class="lbl">বাস্তব জীবন</div></div>
+              <div class="series-tag"><span class="ico">👑</span><div class="lbl">আত্মসম্মান</div></div>
+              <div class="series-tag"><span class="ico">🔥</span><div class="lbl">সংগ্রাম</div></div>
+              <div class="series-tag"><span class="ico">🕊️</span><div class="lbl">নীরব ত্যাগ</div></div>
+            </div>
+          </div>
+
+          <!-- Platforms -->
+          <div class="about-block">
+            <div class="about-block-title">আমাদের সাথে থাকুন</div>
+            <div class="platform-row">
+              <a class="platform-card yt" href="https://youtube.com/@ontoralepurush" target="_blank" rel="noopener">
+                <div class="platform-icon">▶</div>
+                <div class="platform-info">
+                  <div class="pname">YouTube</div>
+                  <div class="psub">সরাসরি চ্যানেলে যান · Subscribe করুন</div>
+                </div>
+                <div class="arrow">›</div>
+              </a>
+              <a class="platform-card fb" href="https://www.facebook.com/OntoralePurush" target="_blank" rel="noopener">
+                <div class="platform-icon">f</div>
+                <div class="platform-info">
+                  <div class="pname">Facebook Page</div>
+                  <div class="psub">সরাসরি পেজে যান · Follow করুন</div>
+                </div>
+                <div class="arrow">›</div>
+              </a>
+            </div>
+          </div>
+
+          <!-- Closing -->
+          <div class="closing-quote">
+            <p>এই প্ল্যাটফর্ম কেবল একটি অ্যাপ নয়<br>এটি অনুভূতি, বাস্তবতা<br>আর নীরব সংগ্রামের একটি কণ্ঠস্বর।</p>
+            <div class="sig">— অন্তরালে পুরুষ</div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- WRITE -->
+    <section class="screen" id="write">
+      <div class="panel"><div class="scroll-area">
+        <h2 class="section-title">আপনার লেখা</h2>
+        <div class="field">
+          <label for="titleInput">শিরোনাম</label>
+          <input id="titleInput" type="text" placeholder="গল্পের শিরোনাম লিখুন" />
+        </div>
+        <div class="field">
+          <label for="storyInput">গল্প</label>
+          <textarea id="storyInput" placeholder="আপনার লেখা এখানে..."></textarea>
+        </div>
+        <div class="actions">
+          <button class="action save" id="saveBtn">Save</button>
+          <button class="action update" id="updateBtn">Update</button>
+          <button class="action delete" id="deleteBtn">Delete</button>
+        </div>
+        <div id="savedList"></div>
+      </div></div>
+    </section>
+  </main>
+</div>
+
+<script>
+  const defaultStories = [
+    { id:"1", title:"একটি নীরব রাত", story:"সবার সামনে সে হাসে\nকিন্তু ভেতরের ভাঙন কেউ দেখে না\nতার কাঁধে দায়িত্ব\nআর চোখের কোণে লুকানো ক্লান্তি" },
+    { id:"2", title:"বাবার চুপ থাকা", story:"বাবা কম বলেন\nকারণ বলার আগে ভাবেন\nঘামের দাম বোঝাতে\nতাঁর শব্দের প্রয়োজন হয় না" },
+    { id:"3", title:"অদেখা লড়াই", story:"মানুষ ভাবে পুরুষ শক্ত\nকিন্তু শক্ত থাকা আর সুখী থাকা এক নয়\nকখনও কখনও\nসবচেয়ে নীরব মানুষটাই সবচেয়ে বেশি ভাঙে" }
+  ];
+
+  const LS_KEY = "antorale-purush-v2";
+  let stories = JSON.parse(localStorage.getItem(LS_KEY)||"null")||defaultStories;
+  let currentIndex = 0;
+  let editingId = null;
+  let startX = 0, deltaX = 0, dragging = false;
+
+  const tocList      = document.getElementById("tocList");
+  const sliderTrack  = document.getElementById("sliderTrack");
+  const counter      = document.getElementById("counter");
+  const viewport     = document.getElementById("sliderViewport");
+  const prevBtn      = document.getElementById("prevBtn");
+  const nextBtn      = document.getElementById("nextBtn");
+  const titleInput   = document.getElementById("titleInput");
+  const storyInput   = document.getElementById("storyInput");
+  const saveBtn      = document.getElementById("saveBtn");
+  const updateBtn    = document.getElementById("updateBtn");
+  const deleteBtn    = document.getElementById("deleteBtn");
+  const savedList    = document.getElementById("savedList");
+  const tabs         = [...document.querySelectorAll(".tab")];
+  const screens      = [...document.querySelectorAll(".screen")];
+
+  function esc(s){return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;")}
+  function persist(){localStorage.setItem(LS_KEY,JSON.stringify(stories))}
+
+  function setScreen(id){
+    screens.forEach(s=>s.classList.toggle("active",s.id===id));
+    tabs.forEach(t=>t.classList.toggle("active",t.dataset.screen===id));
+    if(id==="read") renderReader();
+    if(id==="toc")  renderTOC();
+    if(id==="write") renderSaved();
+  }
+  tabs.forEach(t=>t.addEventListener("click",()=>setScreen(t.dataset.screen)));
+
+  function renderTOC(){
+    tocList.innerHTML = stories.map((s,i)=>
+      `<button class="toc-item" data-index="${i}">${esc(s.title)}<small>${esc(s.story.slice(0,54).replace(/\n/g," "))}${s.story.length>54?"...":""}</small></button>`
+    ).join("");
+    tocList.querySelectorAll(".toc-item").forEach(btn=>btn.addEventListener("click",()=>{
+      currentIndex=Number(btn.dataset.index);setScreen("read");
+    }));
+  }
+
+  function renderReader(){
+    sliderTrack.style.transform=`translateX(${-currentIndex*100}%)`;
+    sliderTrack.innerHTML=stories.map(s=>
+      `<div class="slide"><article class="story"><h3>${esc(s.title)}</h3><p>${esc(s.story)}</p></article></div>`
+    ).join("");
+    counter.textContent=`${currentIndex+1} / ${stories.length}`;
+  }
+
+  function next(){currentIndex=(currentIndex+1)%stories.length;renderReader()}
+  function prev(){currentIndex=(currentIndex-1+stories.length)%stories.length;renderReader()}
+  prevBtn.addEventListener("click",prev);
+  nextBtn.addEventListener("click",next);
+
+  viewport.addEventListener("touchstart",e=>{startX=e.touches[0].clientX;deltaX=0;dragging=true},{passive:true});
+  viewport.addEventListener("touchmove",e=>{if(dragging)deltaX=e.touches[0].clientX-startX},{passive:true});
+  viewport.addEventListener("touchend",()=>{if(dragging&&Math.abs(deltaX)>45){deltaX<0?next():prev()}dragging=false;deltaX=0});
+
+  function renderSaved(){
+    savedList.innerHTML=stories.map((s,i)=>
+      `<div class="saved-item"><h4>${esc(s.title)}</h4><p>${esc(s.story)}</p><button data-edit="${i}">✏️ Edit</button></div>`
+    ).join("")||`<div class="empty">এখনও কোনো লেখা নেই</div>`;
+    savedList.querySelectorAll("[data-edit]").forEach(btn=>btn.addEventListener("click",()=>{
+      const s=stories[Number(btn.dataset.edit)];editingId=s.id;titleInput.value=s.title;storyInput.value=s.story;
+    }));
+  }
+
+  function resetForm(){titleInput.value="";storyInput.value="";editingId=null}
+
+  saveBtn.addEventListener("click",()=>{
+    const title=titleInput.value.trim(),story=storyInput.value.trim();
+    if(!title||!story){alert("Title এবং Story দুটোই দিন");return}
+    stories.unshift({id:String(Date.now()),title,story});
+    persist();resetForm();renderAll();
+  });
+  updateBtn.addEventListener("click",()=>{
+    const title=titleInput.value.trim(),story=storyInput.value.trim();
+    if(!editingId){alert("প্রথমে একটি লেখা Edit করুন");return}
+    const idx=stories.findIndex(s=>s.id===editingId);
+    if(idx===-1){alert("লেখা খুঁজে পাওয়া যায়নি");return}
+    stories[idx]={...stories[idx],title,story};persist();resetForm();renderAll();
+  });
+  deleteBtn.addEventListener("click",()=>{
+    if(!editingId){alert("প্রথমে একটি লেখা Edit করুন");return}
+    stories=stories.filter(s=>s.id!==editingId);persist();resetForm();renderAll();
+  });
+
+  function renderAll(){renderTOC();renderReader();renderSaved()}
+  renderAll();
+  setScreen("toc");
+</script>
+</body>
+</html>
